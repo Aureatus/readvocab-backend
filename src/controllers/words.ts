@@ -1,5 +1,4 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { Db } from "mongodb";
 
 import findDefinitions from "../helpers/findDefinitions.js";
 import findRareWords from "../helpers/findRareWords.js";
@@ -15,7 +14,7 @@ async function words(
   reply: FastifyReply
 ): Promise<void> {
   const corpus = this.corpus;
-  const { db } = this.mongo;
+  const { prisma } = this;
   const file = await request.file();
   if (file === undefined) throw Error("No file uploaded");
 
@@ -34,8 +33,7 @@ async function words(
           lastLoadingEventTime = Date.now();
         }
 
-        const cachedResult =
-          db instanceof Db ? await getCachedResult(docProxy, db) : null;
+        const cachedResult = await getCachedResult(docProxy, prisma);
         if (cachedResult !== null) {
           yield { event: "result", data: JSON.stringify(cachedResult) };
           return;
@@ -59,9 +57,7 @@ async function words(
           rareWordDefinitions
         );
 
-        if (db instanceof Db) {
-          await createCachedResult(docProxy, db, rareWordObjects);
-        }
+        await createCachedResult(docProxy, prisma, rareWordObjects);
         yield { event: "result", data: JSON.stringify(rareWordObjects) };
       } catch (err) {
         yield {

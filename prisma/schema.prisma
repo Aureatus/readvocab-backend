@@ -18,4 +18,5 @@ model Pdfs {
   creator String[]
   data    PdfsData[]
   title   String
+  @@unique([creator, title])
 }

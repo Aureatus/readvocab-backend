@@ -8,6 +8,7 @@ import fastifyHelmet from "@fastify/helmet";
 import wordsRouter from "./routes/wordsRouter.js";
 import dotenv from "dotenv";
 import corpus from "./plugins/corpus.js";
+import prismaPlugin from "./plugins/prisma.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ await app.register(fastifyHelmet);
 await app.register(fastifyCompress);
 await app.register(fastifyMultipart);
 await app.register(fastifyMongodb, { url: mongoURL, database: "Readvocab" });
+await app.register(prismaPlugin);
 await app.register(cors);
 await app.register(FastifySSEPlugin);
 

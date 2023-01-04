@@ -2,15 +2,14 @@
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { DefinitionWord } from "../types.js";
 
-import type { Db } from "mongodb";
+import type { PrismaClient } from "@prisma/client";
 
 const createCachedResult = async (
   docProxy: PDFDocumentProxy,
-  db: Db,
+  prisma: PrismaClient,
   rareWordObjects: DefinitionWord[]
 ): Promise<void> => {
   try {
-    const pdfCollection = db.collection("pdfs");
     const { metadata } = await docProxy.getMetadata();
     const title = metadata.get("dc:title");
     const creator = metadata.get("dc:creator");
@@ -20,7 +19,11 @@ const createCachedResult = async (
       title,
       data: rareWordObjects,
     };
-    await pdfCollection.insertOne(document);
+    await prisma.pdfs.upsert({
+      where: { creator_title: { creator, title } },
+      create: document,
+      update: document,
+    });
   } catch (err) {
     console.error(err);
   }

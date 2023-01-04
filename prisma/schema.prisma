@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type PdfsData {
+  definition String
+  word       String
+  wordClass  String
+}
+
+model Pdfs {
+  id      String     @id @default(auto()) @map("_id") @db.ObjectId
+  creator String[]
+  data    PdfsData[]
+  title   String
+}

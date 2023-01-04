@@ -1,4 +1,3 @@
-/* eslint-disable no-unreachable */
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { DefinitionWord } from "../types.js";
 
